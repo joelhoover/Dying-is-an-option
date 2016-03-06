@@ -279,3 +279,7 @@ $RECYCLE.BIN/
 
 # Windows shortcuts
 *.lnk
+*.sln
+*.vcxproj
+*.filters
+Dying is an option/packages.config
