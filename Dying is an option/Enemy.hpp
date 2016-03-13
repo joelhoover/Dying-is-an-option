@@ -17,10 +17,11 @@ public:
 	bool	hasKilled();
 
 private:
-	sf::CircleShape						m_enemySprite;
+	sf::Sprite							m_enemySprite;
 	Maze*								m_maze;
 	Player*								m_player;
 	sf::Vector2u						m_position;
 	Direction							m_currentDirection;
+	static std::unique_ptr<sf::Texture>	m_enemyTexture;
 };
 

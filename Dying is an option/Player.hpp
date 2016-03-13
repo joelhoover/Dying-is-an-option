@@ -19,7 +19,8 @@ public:
 	sf::Vector2u	getMazePosition();
 
 private:
-	sf::CircleShape m_playerSprite;
+	sf::Sprite		m_playerSprite;
+	sf::Texture		m_playerTexture;
 	bool			doMove(Direction direction);
 	Maze*			m_maze;
 	sf::Vector2u	m_position;

@@ -1,6 +1,6 @@
 #include "Maze.hpp"
 
-constexpr float nodeSize = 16;
+constexpr float nodeSize = 50;
 constexpr float	corridorWidthFactor = 0.4;
 
 Maze::Maze()

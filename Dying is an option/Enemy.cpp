@@ -1,14 +1,22 @@
 #include "Enemy.hpp"
 #include <chrono>
 
+std::unique_ptr<sf::Texture>	Enemy::m_enemyTexture;
+
 Enemy::Enemy(Maze& maze,Player& player):
 	m_maze(&maze),
 	m_player(&player)
 {
-	//use a red circle for now
-	m_enemySprite.setRadius(10);
-	m_enemySprite.setFillColor(sf::Color::Red);
-	m_enemySprite.setOrigin(m_enemySprite.getRadius(), m_enemySprite.getRadius());
+	//if the texture isn't loaded, load it
+	if (!m_enemyTexture.get())
+	{
+		m_enemyTexture = std::make_unique<sf::Texture>();
+		m_enemyTexture->loadFromFile("Minotaur.png");
+	}
+
+	m_enemySprite.setTexture(*m_enemyTexture);
+	auto bounds(m_enemySprite.getGlobalBounds());
+	m_enemySprite.setOrigin(bounds.width / 2, bounds.height / 2);
 	
 	//start in a random Position
 	std::mt19937 engine;
