@@ -4,6 +4,7 @@ Player::Player(Maze& maze) :
 	m_maze(&maze)
 {
 	m_playerSprite.setRadius(5);
+	m_playerSprite.setFillColor(sf::Color::Green);
 
 	//start off at the top left of the map
 	m_position = { 0,0 };

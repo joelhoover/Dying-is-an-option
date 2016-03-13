@@ -7,7 +7,7 @@ int main()
 	sf::RenderWindow window(sf::VideoMode(600, 600), "Dying is an option!");
 
 	Maze maze;
-	maze.generate({ 50,50 }, std::chrono::high_resolution_clock::now().time_since_epoch().count());
+	maze.generate({ 30,30 }, std::chrono::high_resolution_clock::now().time_since_epoch().count());
 
 	Player player(maze);
 

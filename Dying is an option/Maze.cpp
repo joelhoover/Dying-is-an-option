@@ -20,7 +20,7 @@ void Maze::generate(sf::Vector2u size, int seed)
 
 	//clear the vertexarray
 	maze.clear();
-	maze.setPrimitiveType(sf::PrimitiveType::Lines);
+	maze.setPrimitiveType(sf::PrimitiveType::Quads);
 
 	//explore all the nodes recursively, starting at top left
 	exploreNode({ 0,0 });
@@ -42,6 +42,12 @@ void	Maze::exploreNode(sf::Vector2u position)
 	//set this node as visited first, and add to the vertexArray
 	auto& thisNode = mazeNodes[position.x][position.y];
 	thisNode->visited = true;
+
+	//create a quad for the current node
+	maze.append(sf::Vector2f(position.x * nodeSize - nodeSize / 4, position.y * nodeSize - nodeSize / 4));
+	maze.append(sf::Vector2f(position.x * nodeSize + nodeSize / 4, position.y * nodeSize - nodeSize / 4));
+	maze.append(sf::Vector2f(position.x * nodeSize + nodeSize / 4, position.y * nodeSize + nodeSize / 4));
+	maze.append(sf::Vector2f(position.x * nodeSize - nodeSize / 4, position.y * nodeSize + nodeSize / 4));
 
 	//get the available neighbours (as a direction bit mask)
 	auto availableNeighbours = getUnvisitedNeighbours(position);
@@ -75,9 +81,35 @@ void	Maze::exploreNode(sf::Vector2u position)
 			break;
 		}
 
-		//create a line between the two positions
-		maze.append(sf::Vector2f(position.x * nodeSize, position.y * nodeSize));
-		maze.append(sf::Vector2f(nextPosition.x * nodeSize, nextPosition.y * nodeSize));
+		//and a quad for the connection to the next node
+		//I know there'll be a smarter way of doing this. Leave me alone
+		switch (randomDirection)
+		{
+		case Up:
+			maze.append(sf::Vector2f(position.x * nodeSize - nodeSize / 4, nextPosition.y * nodeSize + nodeSize / 4));
+			maze.append(sf::Vector2f(position.x * nodeSize + nodeSize / 4, nextPosition.y * nodeSize + nodeSize / 4));
+			maze.append(sf::Vector2f(position.x * nodeSize + nodeSize / 4, position.y * nodeSize - nodeSize / 4));
+			maze.append(sf::Vector2f(position.x * nodeSize - nodeSize / 4, position.y * nodeSize - nodeSize / 4));
+			break;
+		case Down:
+			maze.append(sf::Vector2f(position.x * nodeSize - nodeSize / 4, position.y * nodeSize + nodeSize / 4));
+			maze.append(sf::Vector2f(position.x * nodeSize + nodeSize / 4, position.y * nodeSize + nodeSize / 4));
+			maze.append(sf::Vector2f(position.x * nodeSize + nodeSize / 4, nextPosition.y * nodeSize - nodeSize / 4));
+			maze.append(sf::Vector2f(position.x * nodeSize - nodeSize / 4, nextPosition.y * nodeSize - nodeSize / 4));
+			break;
+		case Left:
+			maze.append(sf::Vector2f(nextPosition.x * nodeSize + nodeSize / 4, position.y * nodeSize + nodeSize / 4));
+			maze.append(sf::Vector2f(position.x * nodeSize - nodeSize / 4, position.y * nodeSize + nodeSize / 4));
+			maze.append(sf::Vector2f(position.x * nodeSize - nodeSize / 4, position.y * nodeSize - nodeSize / 4));
+			maze.append(sf::Vector2f(nextPosition.x * nodeSize + nodeSize / 4, position.y * nodeSize - nodeSize / 4));
+			break;
+		case Right:
+			maze.append(sf::Vector2f(position.x * nodeSize + nodeSize / 4, position.y * nodeSize + nodeSize / 4));
+			maze.append(sf::Vector2f(nextPosition.x * nodeSize - nodeSize / 4, position.y * nodeSize + nodeSize / 4));
+			maze.append(sf::Vector2f(nextPosition.x * nodeSize - nodeSize / 4, position.y * nodeSize - nodeSize / 4));
+			maze.append(sf::Vector2f(position.x * nodeSize + nodeSize / 4, position.y * nodeSize - nodeSize / 4));
+			break;
+		}
 
 		//update the available directions
 		thisNode->availableDirections |= randomDirection;

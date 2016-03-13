@@ -283,3 +283,4 @@ $RECYCLE.BIN/
 *.vcxproj
 *.filters
 Dying is an option/packages.config
+*.opendb
