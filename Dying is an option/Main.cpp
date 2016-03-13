@@ -24,7 +24,7 @@ int main()
 				switch (event.key.code)
 				{
 				case sf::Keyboard::Space:
-					maze.generate({ 50,50 }, std::chrono::high_resolution_clock::now().time_since_epoch().count());
+					maze.generate({ 30,30 }, std::chrono::high_resolution_clock::now().time_since_epoch().count());
 					break;
 				}
 			}

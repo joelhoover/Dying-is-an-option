@@ -1,6 +1,14 @@
 #include "Maze.hpp"
 
-constexpr float nodeSize = 10;
+constexpr float nodeSize = 50;
+constexpr float	corridorWidthFactor = 0.4;
+
+Maze::Maze()
+{
+	floorTexture.loadFromFile("floor.jpg");
+	floorTexture.setRepeated(true);
+	floorTexture.setSmooth(true);
+}
 
 void Maze::generate(sf::Vector2u size, int seed)
 {
@@ -24,12 +32,20 @@ void Maze::generate(sf::Vector2u size, int seed)
 
 	//explore all the nodes recursively, starting at top left
 	exploreNode({ 0,0 });
+
+	//set all the tex coords to the vertex positions
+	for (auto i(0); i < maze.getVertexCount(); i++)
+	{
+		maze[i].texCoords = maze[i].position;
+	}
 }
 
 void Maze::draw(sf::RenderTarget & target, sf::RenderStates states) const
 {
 	auto transform = getTransform();
-	target.draw(maze, transform);
+	states.transform = transform;
+	states.texture = &floorTexture;
+	target.draw(maze, states);
 }
 
 const float Maze::getNodeSize()
@@ -44,11 +60,16 @@ void	Maze::exploreNode(sf::Vector2u position)
 	thisNode->visited = true;
 
 	//create a quad for the current node
-	maze.append(sf::Vector2f(position.x * nodeSize - nodeSize / 4, position.y * nodeSize - nodeSize / 4));
-	maze.append(sf::Vector2f(position.x * nodeSize + nodeSize / 4, position.y * nodeSize - nodeSize / 4));
-	maze.append(sf::Vector2f(position.x * nodeSize + nodeSize / 4, position.y * nodeSize + nodeSize / 4));
-	maze.append(sf::Vector2f(position.x * nodeSize - nodeSize / 4, position.y * nodeSize + nodeSize / 4));
+	maze.append(sf::Vector2f(position.x * nodeSize - nodeSize * corridorWidthFactor, position.y * nodeSize - nodeSize * corridorWidthFactor));
+	maze.append(sf::Vector2f(position.x * nodeSize + nodeSize * corridorWidthFactor, position.y * nodeSize - nodeSize * corridorWidthFactor));
+	maze.append(sf::Vector2f(position.x * nodeSize + nodeSize * corridorWidthFactor, position.y * nodeSize + nodeSize * corridorWidthFactor));
+	maze.append(sf::Vector2f(position.x * nodeSize - nodeSize * corridorWidthFactor, position.y * nodeSize + nodeSize * corridorWidthFactor));
 
+	//if it's the exit node then return early
+	if (position.x == mazeNodes.size() - 1 && position.y == mazeNodes[mazeNodes.size() - 1].size()-1)
+	{
+		return;
+	}
 	//get the available neighbours (as a direction bit mask)
 	auto availableNeighbours = getUnvisitedNeighbours(position);
 
@@ -86,28 +107,28 @@ void	Maze::exploreNode(sf::Vector2u position)
 		switch (randomDirection)
 		{
 		case Up:
-			maze.append(sf::Vector2f(position.x * nodeSize - nodeSize / 4, nextPosition.y * nodeSize + nodeSize / 4));
-			maze.append(sf::Vector2f(position.x * nodeSize + nodeSize / 4, nextPosition.y * nodeSize + nodeSize / 4));
-			maze.append(sf::Vector2f(position.x * nodeSize + nodeSize / 4, position.y * nodeSize - nodeSize / 4));
-			maze.append(sf::Vector2f(position.x * nodeSize - nodeSize / 4, position.y * nodeSize - nodeSize / 4));
+			maze.append(sf::Vector2f(position.x * nodeSize - nodeSize *corridorWidthFactor, nextPosition.y * nodeSize + nodeSize * corridorWidthFactor));
+			maze.append(sf::Vector2f(position.x * nodeSize + nodeSize *corridorWidthFactor, nextPosition.y * nodeSize + nodeSize * corridorWidthFactor));
+			maze.append(sf::Vector2f(position.x * nodeSize + nodeSize *corridorWidthFactor, position.y * nodeSize - nodeSize * corridorWidthFactor));
+			maze.append(sf::Vector2f(position.x * nodeSize - nodeSize *corridorWidthFactor, position.y * nodeSize - nodeSize * corridorWidthFactor));
 			break;
 		case Down:
-			maze.append(sf::Vector2f(position.x * nodeSize - nodeSize / 4, position.y * nodeSize + nodeSize / 4));
-			maze.append(sf::Vector2f(position.x * nodeSize + nodeSize / 4, position.y * nodeSize + nodeSize / 4));
-			maze.append(sf::Vector2f(position.x * nodeSize + nodeSize / 4, nextPosition.y * nodeSize - nodeSize / 4));
-			maze.append(sf::Vector2f(position.x * nodeSize - nodeSize / 4, nextPosition.y * nodeSize - nodeSize / 4));
+			maze.append(sf::Vector2f(position.x * nodeSize - nodeSize * corridorWidthFactor, position.y * nodeSize + nodeSize * corridorWidthFactor));
+			maze.append(sf::Vector2f(position.x * nodeSize + nodeSize * corridorWidthFactor, position.y * nodeSize + nodeSize * corridorWidthFactor));
+			maze.append(sf::Vector2f(position.x * nodeSize + nodeSize * corridorWidthFactor, nextPosition.y * nodeSize - nodeSize * corridorWidthFactor));
+			maze.append(sf::Vector2f(position.x * nodeSize - nodeSize * corridorWidthFactor, nextPosition.y * nodeSize - nodeSize * corridorWidthFactor));
 			break;
 		case Left:
-			maze.append(sf::Vector2f(nextPosition.x * nodeSize + nodeSize / 4, position.y * nodeSize + nodeSize / 4));
-			maze.append(sf::Vector2f(position.x * nodeSize - nodeSize / 4, position.y * nodeSize + nodeSize / 4));
-			maze.append(sf::Vector2f(position.x * nodeSize - nodeSize / 4, position.y * nodeSize - nodeSize / 4));
-			maze.append(sf::Vector2f(nextPosition.x * nodeSize + nodeSize / 4, position.y * nodeSize - nodeSize / 4));
+			maze.append(sf::Vector2f(nextPosition.x * nodeSize + nodeSize * corridorWidthFactor, position.y * nodeSize + nodeSize * corridorWidthFactor));
+			maze.append(sf::Vector2f(position.x * nodeSize - nodeSize * corridorWidthFactor, position.y * nodeSize + nodeSize * corridorWidthFactor));
+			maze.append(sf::Vector2f(position.x * nodeSize - nodeSize * corridorWidthFactor, position.y * nodeSize - nodeSize * corridorWidthFactor));
+			maze.append(sf::Vector2f(nextPosition.x * nodeSize + nodeSize * corridorWidthFactor, position.y * nodeSize - nodeSize * corridorWidthFactor));
 			break;
 		case Right:
-			maze.append(sf::Vector2f(position.x * nodeSize + nodeSize / 4, position.y * nodeSize + nodeSize / 4));
-			maze.append(sf::Vector2f(nextPosition.x * nodeSize - nodeSize / 4, position.y * nodeSize + nodeSize / 4));
-			maze.append(sf::Vector2f(nextPosition.x * nodeSize - nodeSize / 4, position.y * nodeSize - nodeSize / 4));
-			maze.append(sf::Vector2f(position.x * nodeSize + nodeSize / 4, position.y * nodeSize - nodeSize / 4));
+			maze.append(sf::Vector2f(position.x * nodeSize + nodeSize * corridorWidthFactor, position.y * nodeSize + nodeSize * corridorWidthFactor));
+			maze.append(sf::Vector2f(nextPosition.x * nodeSize - nodeSize * corridorWidthFactor, position.y * nodeSize + nodeSize * corridorWidthFactor));
+			maze.append(sf::Vector2f(nextPosition.x * nodeSize - nodeSize * corridorWidthFactor, position.y * nodeSize - nodeSize * corridorWidthFactor));
+			maze.append(sf::Vector2f(position.x * nodeSize + nodeSize * corridorWidthFactor, position.y * nodeSize - nodeSize * corridorWidthFactor));
 			break;
 		}
 

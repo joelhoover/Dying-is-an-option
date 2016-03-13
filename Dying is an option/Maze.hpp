@@ -10,6 +10,7 @@
 class Maze : public sf::Drawable, public sf::Transformable
 {
 public:
+	Maze();
 
 	void	generate(sf::Vector2u size, int seed);
 
@@ -28,5 +29,6 @@ private:
 	std::mt19937										randomEngine;
 	std::uniform_int_distribution<int>					randomDistribution;
 	sf::VertexArray										maze;
+	sf::Texture											floorTexture;
 };
 

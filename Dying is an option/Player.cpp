@@ -3,18 +3,18 @@
 Player::Player(Maze& maze) :
 	m_maze(&maze)
 {
-	m_playerSprite.setRadius(5);
+	m_playerSprite.setRadius(10);
 	m_playerSprite.setFillColor(sf::Color::Green);
 
 	//start off at the top left of the map
 	m_position = { 0,0 };
 
 	//origin to center
-	m_playerSprite.setOrigin(5, 5);
+	m_playerSprite.setOrigin(m_playerSprite.getRadius(), m_playerSprite.getRadius());
 
 	//set up the initial view
 	m_view.setCenter(getPosition());
-	m_view.zoom(0.2);
+	m_view.zoom(0.5);
 }
 
 bool Player::handleEvent(sf::Event event)
