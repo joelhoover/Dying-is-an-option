@@ -15,6 +15,10 @@ public:
 
 	virtual void draw(sf::RenderTarget& target, sf::RenderStates states) const;
 
+	const float	getNodeSize();
+
+	int		getAvailableDirections(sf::Vector2u pos);
+
 private:
 
 	void												exploreNode(sf::Vector2u position);

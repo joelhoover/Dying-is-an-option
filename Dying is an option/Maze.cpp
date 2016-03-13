@@ -1,7 +1,6 @@
 #include "Maze.hpp"
-#include "MazeNode.hpp"
 
-constexpr int nodeSize = 10;
+constexpr float nodeSize = 10;
 
 void Maze::generate(sf::Vector2u size, int seed)
 {
@@ -31,6 +30,11 @@ void Maze::draw(sf::RenderTarget & target, sf::RenderStates states) const
 {
 	auto transform = getTransform();
 	target.draw(maze, transform);
+}
+
+const float Maze::getNodeSize()
+{
+	return nodeSize;
 }
 
 void	Maze::exploreNode(sf::Vector2u position)
@@ -74,6 +78,12 @@ void	Maze::exploreNode(sf::Vector2u position)
 		//create a line between the two positions
 		maze.append(sf::Vector2f(position.x * nodeSize, position.y * nodeSize));
 		maze.append(sf::Vector2f(nextPosition.x * nodeSize, nextPosition.y * nodeSize));
+
+		//update the available directions
+		thisNode->availableDirections |= randomDirection;
+		auto& nextNode(mazeNodes[nextPosition.x][nextPosition.y]);
+		auto oppositeDirection(getOppositeDirection(static_cast<Direction>(randomDirection)));
+		nextNode->availableDirections |= oppositeDirection;
 
 		//then explore the node
 		exploreNode(nextPosition);
@@ -125,4 +135,9 @@ int	Maze::getUnvisitedNeighbours(sf::Vector2u position)
 	}
 
 	return availableNeighbours;
+}
+
+int	Maze::getAvailableDirections(sf::Vector2u pos)
+{
+	return mazeNodes[pos.x][pos.y]->availableDirections;
 }

@@ -8,6 +8,25 @@ enum Direction
 	Right = 8
 };
 
+static Direction getOppositeDirection(Direction direction)
+{
+	switch (direction)
+	{
+	case Up:
+		return Down;
+		break;
+	case Down:
+		return Up;
+		break;
+	case Left:
+		return Right;
+		break;
+	case Right:
+		return Left;
+		break;
+	}
+}
+
 class MazeNode
 {
 public:
@@ -15,5 +34,6 @@ public:
 	~MazeNode() = default;
 
 	bool	visited = false;
+	int		availableDirections = 0;
 };
 

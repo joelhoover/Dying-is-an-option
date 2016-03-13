@@ -1,4 +1,5 @@
 #include "Maze.hpp"
+#include "Player.hpp"
 #include <chrono>
 
 int main()
@@ -7,7 +8,8 @@ int main()
 
 	Maze maze;
 	maze.generate({ 50,50 }, std::chrono::high_resolution_clock::now().time_since_epoch().count());
-	maze.setPosition(10, 10);
+
+	Player player(maze);
 
 	while (window.isOpen()) 
 	{
@@ -16,8 +18,9 @@ int main()
 		{
 			if (event.type == sf::Event::Closed)
 				window.close();
-			if (event.type = sf::Event::KeyPressed)
+			if (event.type == sf::Event::KeyPressed)
 			{
+				player.handleEvent(event);
 				switch (event.key.code)
 				{
 				case sf::Keyboard::Space:
@@ -29,6 +32,7 @@ int main()
 
 		window.clear();
 		window.draw(maze);
+		window.draw(player);
 		window.display();
 	}
 
