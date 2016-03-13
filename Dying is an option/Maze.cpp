@@ -1,13 +1,12 @@
 #include "Maze.hpp"
 
-constexpr float nodeSize = 50;
+constexpr float nodeSize = 16;
 constexpr float	corridorWidthFactor = 0.4;
 
 Maze::Maze()
 {
-	floorTexture.loadFromFile("floor.jpg");
+	floorTexture.loadFromFile("floor.png");
 	floorTexture.setRepeated(true);
-	floorTexture.setSmooth(true);
 }
 
 void Maze::generate(sf::Vector2u size, int seed)
@@ -24,7 +23,7 @@ void Maze::generate(sf::Vector2u size, int seed)
 
 	//seed the engine and set up the distribution
 	randomEngine.seed(seed);
-	randomDistribution = std::uniform_int_distribution<int>(0, 4);	//magic number, so shoot me
+	randomDistribution = std::uniform_int_distribution<unsigned int>(0, 4);	//magic number, so shoot me
 
 	//clear the vertexarray
 	maze.clear();
@@ -40,6 +39,12 @@ void Maze::generate(sf::Vector2u size, int seed)
 	}
 }
 
+void Maze::regenerate()
+{
+	randomDistribution = std::uniform_int_distribution<unsigned int>(0, -1);
+	generate({ unsigned int(mazeNodes.size()),unsigned int(mazeNodes[0].size()) }, randomDistribution(randomEngine));
+}
+
 void Maze::draw(sf::RenderTarget & target, sf::RenderStates states) const
 {
 	auto transform = getTransform();
@@ -51,6 +56,11 @@ void Maze::draw(sf::RenderTarget & target, sf::RenderStates states) const
 const float Maze::getNodeSize()
 {
 	return nodeSize;
+}
+
+sf::Vector2u Maze::getMazeSize()
+{
+	return{ mazeNodes.size(),mazeNodes[mazeNodes.size() - 1].size() };
 }
 
 void	Maze::exploreNode(sf::Vector2u position)
@@ -76,12 +86,12 @@ void	Maze::exploreNode(sf::Vector2u position)
 	while (availableNeighbours)
 	{
 		//get a random direction
-		auto randomDirection = 1 << randomDistribution(randomEngine);
+		auto randomDirection = getRandomDirection();
 
 		while (!(randomDirection & availableNeighbours))
 		{
 			//selected direction isn't available, get a new one
-			randomDirection = 1 << randomDistribution(randomEngine);
+			randomDirection = getRandomDirection();
 		}
 
 		//update our position
@@ -193,4 +203,9 @@ int	Maze::getUnvisitedNeighbours(sf::Vector2u position)
 int	Maze::getAvailableDirections(sf::Vector2u pos)
 {
 	return mazeNodes[pos.x][pos.y]->availableDirections;
+}
+
+Direction Maze::getRandomDirection()
+{
+	return static_cast<Direction>(1 << randomDistribution(randomEngine));
 }

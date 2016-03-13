@@ -13,12 +13,15 @@ public:
 	Maze();
 
 	void	generate(sf::Vector2u size, int seed);
+	void	regenerate();
 
 	virtual void draw(sf::RenderTarget& target, sf::RenderStates states) const;
 
-	const float	getNodeSize();
+	const float		getNodeSize();
+	sf::Vector2u	getMazeSize();
 
-	int		getAvailableDirections(sf::Vector2u pos);
+	int			getAvailableDirections(sf::Vector2u pos);
+	Direction	getRandomDirection();
 
 private:
 
@@ -27,7 +30,7 @@ private:
 
 	std::vector<std::vector<std::unique_ptr<MazeNode>>>	mazeNodes;
 	std::mt19937										randomEngine;
-	std::uniform_int_distribution<int>					randomDistribution;
+	std::uniform_int_distribution<unsigned int>			randomDistribution;
 	sf::VertexArray										maze;
 	sf::Texture											floorTexture;
 };

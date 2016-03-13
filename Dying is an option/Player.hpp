@@ -16,11 +16,13 @@ public:
 	//returns true if the player moves
 	bool handleEvent(sf::Event event);
 
+	sf::Vector2u	getMazePosition();
+
 private:
 	sf::CircleShape m_playerSprite;
 	bool			doMove(Direction direction);
 	Maze*			m_maze;
-	sf::Vector2f	m_position;
+	sf::Vector2u	m_position;
 	sf::View		m_view;
 };
 

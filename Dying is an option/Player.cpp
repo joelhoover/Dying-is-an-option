@@ -3,7 +3,7 @@
 Player::Player(Maze& maze) :
 	m_maze(&maze)
 {
-	m_playerSprite.setRadius(10);
+	m_playerSprite.setRadius(5);
 	m_playerSprite.setFillColor(sf::Color::Green);
 
 	//start off at the top left of the map
@@ -14,7 +14,7 @@ Player::Player(Maze& maze) :
 
 	//set up the initial view
 	m_view.setCenter(getPosition());
-	m_view.zoom(0.5);
+	m_view.zoom(0.2);
 }
 
 bool Player::handleEvent(sf::Event event)
@@ -47,19 +47,20 @@ bool	Player::doMove(Direction direction)
 	switch (direction & availableDirections)
 	{
 	case Up:
-		move({ 0,-nodeSize });
+		--m_position.y;
 		break;
 	case Down:
-		move({ 0,nodeSize });
+		++m_position.y;
 		break;
 	case Left:
-		move({ -nodeSize,0 });
+		--m_position.x;
 		break;
 	case Right:
-		move({ nodeSize,0 });
+		++m_position.x;
 		break;
 
 	}
+	setPosition(m_position.x * nodeSize, m_position.y* nodeSize);
 	m_view.setCenter(getPosition());
 	return true;
 }
@@ -69,4 +70,9 @@ void Player::draw(sf::RenderTarget& target, sf::RenderStates states) const
 	auto transform = getTransform();
 	target.setView(m_view);
 	target.draw(m_playerSprite,transform);
+}
+
+sf::Vector2u	Player::getMazePosition()
+{
+	return m_position;
 }
