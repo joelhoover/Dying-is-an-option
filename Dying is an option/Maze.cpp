@@ -25,7 +25,6 @@ Maze::Maze(sf::Vector2u size)
 			node = std::make_unique<MazeNode>();
 		}
 	}
-
 	regenerate(true);
 }
 
@@ -65,6 +64,7 @@ void Maze::generate(int seed)
 
 void Maze::regenerate(bool newFinish)
 {
+	randomDistribution = std::uniform_int_distribution<unsigned int>(0, mazeNodes.size());
 	if (newFinish)
 	{
 		randomDistribution = std::uniform_int_distribution<unsigned int>(0, -1);
