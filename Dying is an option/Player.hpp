@@ -18,6 +18,11 @@ public:
 
 	sf::Vector2u	getMazePosition();
 
+	void			respawn();
+
+	int				score;
+	unsigned int	highScore;
+
 private:
 	sf::Sprite		m_playerSprite;
 	sf::Texture		m_playerTexture;
@@ -25,5 +30,8 @@ private:
 	Maze*			m_maze;
 	sf::Vector2u	m_position;
 	sf::View		m_view;
+	sf::Font		scoreFont;
+	sf::Text		scoreText;
+	sf::Text		highScoreText;
 };
 

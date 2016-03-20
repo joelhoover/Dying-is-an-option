@@ -1,4 +1,5 @@
 #include "Player.hpp"
+#include <fstream>
 
 Player::Player(Maze& maze) :
 	m_maze(&maze)
@@ -16,6 +17,39 @@ Player::Player(Maze& maze) :
 	//set up the initial view
 	m_view.setCenter(getPosition());
 	m_view.zoom(0.4);
+
+	//set up the score
+	std::ifstream saveFile("failure.is.an.option");
+	scoreFont.loadFromFile("ALGER.TTF");
+	scoreText.setFont(scoreFont);
+	highScoreText.setFont(scoreFont);
+	score = 0;
+	scoreText.setString("Moves: " + std::to_string(score));
+	if (saveFile.good())
+	{
+		//read the saved score
+		saveFile >> highScore;
+		highScoreText.setString("Best: " + std::to_string(highScore));
+
+		//put the current score below the high score
+		auto highScoreBounds(highScoreText.getGlobalBounds());
+		sf::Vector2f position(highScoreBounds.left, highScoreBounds.top + highScoreBounds.height);
+		scoreText.setPosition(position);
+	}
+	else
+	{
+		highScore = unsigned int(-1);
+	}
+}
+
+void	Player::respawn()
+{
+	m_position = { 0,0 };
+	score = 0;
+	auto nodeSize(m_maze->getNodeSize());
+	setPosition(m_position.x * nodeSize, m_position.y* nodeSize);
+	m_view.setCenter(getPosition());
+	scoreText.setString("Moves: " + std::to_string(score));
 }
 
 bool Player::handleEvent(sf::Event event)
@@ -37,7 +71,7 @@ bool Player::handleEvent(sf::Event event)
 		}
 	}
 	}
-	return false;
+	return true;
 }
 
 bool	Player::doMove(Direction direction)
@@ -63,6 +97,22 @@ bool	Player::doMove(Direction direction)
 	}
 	setPosition(m_position.x * nodeSize, m_position.y* nodeSize);
 	m_view.setCenter(getPosition());
+	score++;
+	scoreText.setString("Moves: " + std::to_string(score));
+	if (m_maze->getEndPosition() == m_position)
+	{
+		//reached the end
+		if (highScore > score)
+		{
+			highScore = score;
+			std::ofstream saveFile("failure.is.an.option");
+			saveFile << highScore;
+			saveFile.close();
+			highScoreText.setString("Best: " + std::to_string(highScore));
+		}
+		return false;
+	}
+
 	return true;
 }
 
@@ -71,6 +121,11 @@ void Player::draw(sf::RenderTarget& target, sf::RenderStates states) const
 	auto transform = getTransform();
 	target.setView(m_view);
 	target.draw(m_playerSprite,transform);
+	target.setView(target.getDefaultView());
+	target.draw(scoreText);
+	target.draw(highScoreText);
+	target.setView(m_view);
+
 }
 
 sf::Vector2u	Player::getMazePosition()

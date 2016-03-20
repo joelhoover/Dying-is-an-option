@@ -1,20 +1,40 @@
 #include "Maze.hpp"
+#include <chrono>
 
 constexpr float nodeSize = 50;
 constexpr float	corridorWidthFactor = 0.4;
 
-Maze::Maze()
+Maze::Maze(sf::Vector2u size)
 {
 	floorTexture.loadFromFile("floor.png");
 	floorTexture.setRepeated(true);
-}
 
-void Maze::generate(sf::Vector2u size, int seed)
-{
+	endTexture.loadFromFile("SFML_LOGO.png");
+	endSprite.setTexture(endTexture);
+	auto endBounds(endSprite.getGlobalBounds());
+	endSprite.setOrigin(endBounds.width / 2, endBounds.height / 2);
+	endSprite.setScale(0.15f,0.15f);
+
+	m_size = size.x;
 	mazeNodes.resize(size.x);
 	for (auto& column : mazeNodes)
 	{
 		column.resize(size.y);
+		for (auto& node : column)
+		{
+			node = std::make_unique<MazeNode>();
+		}
+	}
+
+	regenerate(true);
+}
+
+void Maze::generate(int seed)
+{
+	mazeNodes.resize(m_size);
+	for (auto& column : mazeNodes)
+	{
+		column.resize(m_size);
 		for (auto& node : column)
 		{
 			node = std::make_unique<MazeNode>();
@@ -29,6 +49,7 @@ void Maze::generate(sf::Vector2u size, int seed)
 	maze.clear();
 	maze.setPrimitiveType(sf::PrimitiveType::Quads);
 
+
 	//explore all the nodes recursively, starting at top left
 	exploreNode({ 0,0 });
 
@@ -37,12 +58,23 @@ void Maze::generate(sf::Vector2u size, int seed)
 	{
 		maze[i].texCoords = maze[i].position;
 	}
+
+	//set the position of the exit Sprite;
+	endSprite.setPosition(endPosition.x * nodeSize, endPosition.y * nodeSize);
 }
 
-void Maze::regenerate()
+void Maze::regenerate(bool newFinish)
 {
-	randomDistribution = std::uniform_int_distribution<unsigned int>(0, -1);
-	generate({ unsigned int(mazeNodes.size()),unsigned int(mazeNodes[0].size()) }, randomDistribution(randomEngine));
+	if (newFinish)
+	{
+		randomDistribution = std::uniform_int_distribution<unsigned int>(0, -1);
+		std::mt19937 engine;
+		engine.seed(std::chrono::high_resolution_clock::now().time_since_epoch().count());
+		randomDistribution = std::uniform_int_distribution<unsigned int>(0, mazeNodes.size());
+		endPosition.x = randomDistribution(engine);
+		endPosition.y = randomDistribution(engine);
+	}
+	generate(randomDistribution(randomEngine));
 }
 
 void Maze::draw(sf::RenderTarget & target, sf::RenderStates states) const
@@ -51,6 +83,7 @@ void Maze::draw(sf::RenderTarget & target, sf::RenderStates states) const
 	states.transform = transform;
 	states.texture = &floorTexture;
 	target.draw(maze, states);
+	target.draw(endSprite);
 }
 
 const float Maze::getNodeSize()
@@ -76,7 +109,7 @@ void	Maze::exploreNode(sf::Vector2u position)
 	maze.append(sf::Vector2f(position.x * nodeSize - nodeSize * corridorWidthFactor, position.y * nodeSize + nodeSize * corridorWidthFactor));
 
 	//if it's the exit node then return early
-	if (position.x == mazeNodes.size() - 1 && position.y == mazeNodes[mazeNodes.size() - 1].size()-1)
+	if (position == endPosition)
 	{
 		return;
 	}
@@ -208,4 +241,9 @@ int	Maze::getAvailableDirections(sf::Vector2u pos)
 Direction Maze::getRandomDirection()
 {
 	return static_cast<Direction>(1 << randomDistribution(randomEngine));
+}
+
+sf::Vector2u Maze::getEndPosition()
+{
+	return endPosition;
 }
