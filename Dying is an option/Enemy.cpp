@@ -75,7 +75,6 @@ void	Enemy::doMove()
 		++m_position.x;
 		break;
 	default:
-		__debugbreak();
 		break;
 	}
 

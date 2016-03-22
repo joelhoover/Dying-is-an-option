@@ -93,7 +93,7 @@ const float Maze::getNodeSize()
 
 sf::Vector2u Maze::getMazeSize()
 {
-	return{ mazeNodes.size(),mazeNodes[mazeNodes.size() - 1].size() };
+	return{ static_cast<unsigned int>(mazeNodes.size()),static_cast<unsigned int>(mazeNodes[mazeNodes.size() - 1].size()) };
 }
 
 void	Maze::exploreNode(sf::Vector2u position)

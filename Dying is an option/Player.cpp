@@ -38,7 +38,7 @@ Player::Player(Maze& maze) :
 	}
 	else
 	{
-		highScore = unsigned int(-1);
+		highScore = static_cast<unsigned int>(-1);
 	}
 }
 
@@ -77,7 +77,7 @@ bool Player::handleEvent(sf::Event event)
 bool	Player::doMove(Direction direction)
 {
 	auto nodeSize(m_maze->getNodeSize());
-	auto availableDirections(m_maze->getAvailableDirections({unsigned int(getPosition().x / nodeSize), unsigned int(getPosition().y / nodeSize)}));
+	auto availableDirections(m_maze->getAvailableDirections({static_cast<unsigned int>(getPosition().x / nodeSize), static_cast<unsigned int>(getPosition().y / nodeSize)}));
 	
 	switch (direction & availableDirections)
 	{
