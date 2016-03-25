@@ -40,8 +40,6 @@ void Maze::generate(int seed)
 		}
 	}
 
-	//seed the engine and set up the distribution
-	randomEngine.seed(seed);
 	randomDistribution = std::uniform_int_distribution<unsigned int>(0, 4);	//magic number, so shoot me
 
 	//clear the vertexarray
@@ -67,12 +65,9 @@ void Maze::regenerate(bool newFinish)
 	randomDistribution = std::uniform_int_distribution<unsigned int>(0, mazeNodes.size());
 	if (newFinish)
 	{
-		randomDistribution = std::uniform_int_distribution<unsigned int>(0, -1);
-		std::mt19937 engine;
-		engine.seed(std::chrono::high_resolution_clock::now().time_since_epoch().count());
 		randomDistribution = std::uniform_int_distribution<unsigned int>(0, mazeNodes.size()-1);
-		endPosition.x = randomDistribution(engine);
-		endPosition.y = randomDistribution(engine);
+		endPosition.x = randomDistribution(randomEngine);
+		endPosition.y = randomDistribution(randomEngine);
 	}
 	generate(randomDistribution(randomEngine));
 }
