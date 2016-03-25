@@ -4,7 +4,7 @@
 Player::Player(Maze& maze) :
 	m_maze(&maze)
 {
-	m_playerTexture.loadFromFile("player.png");
+	m_playerTexture.loadFromFile("Player.png");
 	m_playerSprite.setTexture(m_playerTexture);
 
 	//start off at the top left of the map
