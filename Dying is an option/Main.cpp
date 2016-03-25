@@ -10,7 +10,7 @@ int main()
 	window.setFramerateLimit(60);
 
 	Maze maze({ 30,30 });
-	maze.generate( std::chrono::high_resolution_clock::now().time_since_epoch().count());
+	maze.generate();
 
 	Player player(maze);
 

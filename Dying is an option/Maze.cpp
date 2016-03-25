@@ -15,6 +15,8 @@ Maze::Maze(sf::Vector2u size)
 	endSprite.setOrigin(endBounds.width / 2, endBounds.height / 2);
 	endSprite.setScale(0.15f,0.15f);
 
+	randomEngine.seed(std::chrono::high_resolution_clock::now().time_since_epoch().count());
+
 	m_size = size.x;
 	mazeNodes.resize(size.x);
 	for (auto& column : mazeNodes)
@@ -28,7 +30,7 @@ Maze::Maze(sf::Vector2u size)
 	regenerate(true);
 }
 
-void Maze::generate(int seed)
+void Maze::generate()
 {
 	mazeNodes.resize(m_size);
 	for (auto& column : mazeNodes)
@@ -62,14 +64,13 @@ void Maze::generate(int seed)
 
 void Maze::regenerate(bool newFinish)
 {
-	randomDistribution = std::uniform_int_distribution<unsigned int>(0, mazeNodes.size());
 	if (newFinish)
 	{
 		randomDistribution = std::uniform_int_distribution<unsigned int>(0, mazeNodes.size()-1);
 		endPosition.x = randomDistribution(randomEngine);
 		endPosition.y = randomDistribution(randomEngine);
 	}
-	generate(randomDistribution(randomEngine));
+	generate();
 }
 
 void Maze::draw(sf::RenderTarget & target, sf::RenderStates states) const

@@ -12,7 +12,7 @@ class Maze : public sf::Drawable, public sf::Transformable
 public:
 	Maze(sf::Vector2u size);
 
-	void	generate(int seed);
+	void	generate();
 	void	regenerate(bool newFinish = false);
 
 	virtual void draw(sf::RenderTarget& target, sf::RenderStates states) const;
