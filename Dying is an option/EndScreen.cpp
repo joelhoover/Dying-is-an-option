@@ -1,6 +1,8 @@
 #include "EndScreen.hpp"
 #include "Player.hpp"
 
+#include "ResourcePath.h"
+
 
 EndScreen::EndScreen(sf::Vector2u windowSize, Player& player) :
 	m_player(&player)
@@ -9,7 +11,7 @@ EndScreen::EndScreen(sf::Vector2u windowSize, Player& player) :
 	blackout = sf::RectangleShape(static_cast<sf::Vector2f>(windowSize));
 	blackout.setFillColor(sf::Color::Black);
 
-	endFont.loadFromFile("ALGER.TTF");
+	endFont.loadFromFile(resourcePath() + "ALGER.TTF");
 	endText.setFont(endFont);
 	highScoreText.setFont(endFont);
 	retryText.setFont(endFont);

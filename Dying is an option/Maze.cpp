@@ -1,15 +1,17 @@
 #include "Maze.hpp"
 #include <chrono>
 
+#include "ResourcePath.h"
+
 constexpr float nodeSize = 50;
 constexpr float	corridorWidthFactor = 0.4;
 
 Maze::Maze(sf::Vector2u size)
 {
-	floorTexture.loadFromFile("floor.png");
+	floorTexture.loadFromFile(resourcePath() + "floor.png");
 	floorTexture.setRepeated(true);
 
-	endTexture.loadFromFile("SFML_LOGO.png");
+	endTexture.loadFromFile(resourcePath() + "SFML_LOGO.png");
 	endSprite.setTexture(endTexture);
 	auto endBounds(endSprite.getGlobalBounds());
 	endSprite.setOrigin(endBounds.width / 2, endBounds.height / 2);
@@ -198,7 +200,7 @@ int	Maze::getUnvisitedNeighbours(sf::Vector2u position)
 			availableNeighbours |= Up;
 		}
 	}
-	
+
 	//Can we move down?
 	if (position.y < mazeNodes[position.x].size() - 1)
 	{

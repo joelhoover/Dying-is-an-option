@@ -1,10 +1,12 @@
 #include "Player.hpp"
 #include <fstream>
 
+#include "ResourcePath.h"
+
 Player::Player(Maze& maze) :
 	m_maze(&maze)
 {
-	m_playerTexture.loadFromFile("Player.png");
+	m_playerTexture.loadFromFile(resourcePath() + "Player.png");
 	m_playerSprite.setTexture(m_playerTexture);
 
 	//start off at the top left of the map
@@ -19,8 +21,8 @@ Player::Player(Maze& maze) :
 	m_view.zoom(0.4);
 
 	//set up the score
-	std::ifstream saveFile("failure.is.an.option");
-	scoreFont.loadFromFile("ALGER.TTF");
+	std::ifstream saveFile(savePath() + "failure.is.an.option");
+	scoreFont.loadFromFile(resourcePath() + "ALGER.TTF");
 	scoreText.setFont(scoreFont);
 	highScoreText.setFont(scoreFont);
 	score = 0;
@@ -78,7 +80,7 @@ bool	Player::doMove(Direction direction)
 {
 	auto nodeSize(m_maze->getNodeSize());
 	auto availableDirections(m_maze->getAvailableDirections({static_cast<unsigned int>(getPosition().x / nodeSize), static_cast<unsigned int>(getPosition().y / nodeSize)}));
-	
+
 	switch (direction & availableDirections)
 	{
 	case Up:
@@ -105,7 +107,7 @@ bool	Player::doMove(Direction direction)
 		if (highScore > score)
 		{
 			highScore = score;
-			std::ofstream saveFile("failure.is.an.option");
+			std::ofstream saveFile(savePath() + "failure.is.an.option");
 			saveFile << highScore;
 			saveFile.close();
 			highScoreText.setString("Best: " + std::to_string(highScore));

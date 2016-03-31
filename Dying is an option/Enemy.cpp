@@ -1,6 +1,8 @@
 #include "Enemy.hpp"
 #include <chrono>
 
+#include "ResourcePath.h"
+
 std::unique_ptr<sf::Texture>	Enemy::m_enemyTexture;
 
 Enemy::Enemy(Maze& maze,Player& player):
@@ -11,13 +13,13 @@ Enemy::Enemy(Maze& maze,Player& player):
 	if (!m_enemyTexture.get())
 	{
 		m_enemyTexture = std::make_unique<sf::Texture>();
-		m_enemyTexture->loadFromFile("Minotaur.png");
+		m_enemyTexture->loadFromFile(resourcePath() + "Minotaur.png");
 	}
 
 	m_enemySprite.setTexture(*m_enemyTexture);
 	auto bounds(m_enemySprite.getGlobalBounds());
 	m_enemySprite.setOrigin(bounds.width / 2, bounds.height / 2);
-	
+
 	//start in a random Position
 	std::mt19937 engine;
 	engine.seed(std::chrono::high_resolution_clock::now().time_since_epoch().count());
@@ -49,7 +51,7 @@ bool	Enemy::hasKilled()
 void	Enemy::doMove()
 {
 	auto availableDirections = m_maze->getAvailableDirections(m_position);
-	
+
 	//if we can't keep going in the current direction, find a new one
 	if (!(availableDirections & m_currentDirection))
 	{
